@@ -13,12 +13,13 @@ public class UserView {
     public UserView(UserController userController) {
         this.userController = userController;
     }
-
     public void run(){
         while (true) {
+            System.out.println();
             String command = UserRepository.prompt(" 1 - Создать контакт\n 2 - Просмотреть контакт\n" +
                     " 3 - Изменить контакт\n 4 - Просмотреть весь список контактов\n 5 - Удалить контакт\n" +
                     " Enter - Выйти\n   Введите комманду: ");
+            System.out.println();
             if (Objects.equals(command, "")) return;
             switch (command) {
                 case "1":
@@ -26,7 +27,7 @@ public class UserView {
                     userController.saveUser(u);
                     break;
                 case "2":
-                    String id = UserRepository.prompt("User ID: ");
+                    String id = UserRepository.prompt("id номер: ");
                     try {
                         User user = userController.readUser(Long.parseLong(id));
                         System.out.println(user);
@@ -42,6 +43,7 @@ public class UserView {
 
                 case "4":
                     System.out.println(userController.readAll());
+                    System.out.println();
                     break;
                 case "5":
                     String deleteUserId = UserRepository.prompt("Введите id номер абонента, который необходимо удалить: ");
