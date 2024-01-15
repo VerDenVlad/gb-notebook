@@ -1,6 +1,6 @@
 package notebook.model.repository.impl;
 
-import notebook.model.dao.impl.FileOperation;
+
 import notebook.util.DBConnector;
 import notebook.util.UserValidator;
 import notebook.util.mapper.impl.UserMapper;
@@ -11,19 +11,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class UserRepository implements GBRepository {
     private final UserMapper mapper;
-    private final FileOperation operation;
+//    private final FileOperation operation;
 
-    public UserRepository(FileOperation operation) {
+    public UserRepository(String dbPath) {
         this.mapper = new UserMapper();
-        this.operation = operation;
+//        this.operation = operation;
     }
 
     @Override
     public List<User> findAll() {
-        List<String> lines = operation.readAll();
+        List<String> lines = readAll();
         List<User> users = new ArrayList<>();
         for (String line : lines) {
             users.add(mapper.toOutput(line));
@@ -80,8 +81,14 @@ public class UserRepository implements GBRepository {
     }
 
     @Override
-    public boolean delete(Long id) {
-        return false;
+    public void delete(Long userId) {
+        List<User> users = findAll();
+        User deleteUser = users.stream()
+                .filter(u -> u.getId()
+                        .equals(userId))
+                .findFirst().orElseThrow(() -> new RuntimeException("User not found"));
+        users.remove(deleteUser);
+        write(users);
     }
 
     private void write(List<User> users) {
@@ -89,7 +96,7 @@ public class UserRepository implements GBRepository {
         for (User u: users) {
             lines.add(mapper.toInput(u));
         }
-        operation.saveAll(lines);
+        saveAll(lines);
     }
     public List<String> readAll() {
         List<String> lines = new ArrayList<>();
@@ -131,6 +138,18 @@ public class UserRepository implements GBRepository {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+    public static String prompt(String message) {
+        Scanner in = new Scanner(System.in);
+        System.out.print(message);
+        return in.nextLine();
+    }
+
+    public static User createUser() {
+        String firstName = prompt("Имя: ");
+        String lastName = prompt("Фамилия: ");
+        String phone = prompt("Номер телефона: ");
+        return new User(firstName, lastName, phone);
     }
 
 }

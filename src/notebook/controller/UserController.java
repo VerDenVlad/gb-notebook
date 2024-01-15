@@ -1,7 +1,6 @@
 package notebook.controller;
 
 import notebook.model.User;
-import notebook.model.dao.impl.FileOperation;
 import notebook.model.repository.GBRepository;
 
 import java.util.List;
@@ -35,5 +34,8 @@ public class UserController {
     }
     public List<User> readAll(){
         return repository.findAll();
+    }
+    public void deleteUser(Long userId) {
+        repository.delete(userId);
     }
 }
